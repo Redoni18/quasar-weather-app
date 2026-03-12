@@ -12,9 +12,10 @@ The app uses a small Node/Express proxy so the OpenWeather API key stays on the 
 ## Tech stack
 
 - Quasar + Vue 3 for the SPA frontend
+- Tailwind CSS v4 for utility-first styling
 - Express for the server-side proxy and production hosting
 - OpenWeather geocoding, current weather, and 5-day forecast APIs
-- Docker for containerized runtime
+- Docker & Docker Compose for containerized runtime
 - GitHub Actions for CI
 
 ## Environment variables
@@ -37,8 +38,11 @@ Notes:
 
 - `OPENWEATHER_API_KEY` is the preferred variable for the server proxy.
 - `.env` is ignored by git and should not be committed.
+- Docker Compose automatically loads the `.env` file.
 
 ## Run locally
+
+### Standard development
 
 Install dependencies:
 
@@ -60,6 +64,16 @@ npm run dev:client
 
 The frontend dev server proxies `/api/*` requests to `http://localhost:3000` by default.
 
+### Using Docker Compose
+
+The easiest way to run the full stack (frontend + proxy) in a production-like environment:
+
+```bash
+docker compose up --build
+```
+
+This will build the optimized multi-stage image and start the service at `http://localhost:3000`, automatically loading your `.env` file.
+
 ## Production build
 
 Build the Quasar SPA:
@@ -76,16 +90,16 @@ npm run start
 
 ## Docker
 
-Build the container image:
+### Build the container image
 
 ```bash
 docker build -t quasar-weather-app .
 ```
 
-Run the container:
+### Run the container manually
 
 ```bash
-docker run --rm -p 3000:3000 -e OPENWEATHER_API_KEY=your_openweather_api_key quasar-weather-app
+docker run --rm -p 3000:3000 --env-file .env quasar-weather-app
 ```
 
 Then open `http://localhost:3000`.
@@ -123,7 +137,7 @@ GitHub Actions runs the following checks on pushes and pull requests:
 - `npm ci`
 - `npm run lint`
 - `npm run build`
-- `docker build`
+- `docker compose build`
 
 ## OpenWeather docs
 
